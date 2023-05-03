@@ -9,7 +9,8 @@ const errorLog = console.error;
 console.error = (error) => {
   if (
     !error.includes("for a non-boolean attribute") &&
-    !error.includes("validateDOMNesting")
+    !error.includes("validateDOMNesting") &&
+    !error.includes("Not implemented: HTMLFormElement.prototype.submit")
   )
     errorLog(error);
 };

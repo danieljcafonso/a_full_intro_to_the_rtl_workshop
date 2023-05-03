@@ -11,6 +11,7 @@ import LandingPage from "./pages/LandingPage";
 import CarsList from "./pages/CarsList";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AddCars from "./pages/AddCars";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "cars",
         element: <CarsList />,
+      },
+      {
+        path: "add",
+        element: <AddCars />,
       },
     ],
   },

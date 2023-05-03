@@ -1,9 +1,15 @@
 import { render } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthProvider from "../context/AuthContext";
+import { SnackbarProvider } from "notistack";
 
 const customRender = (ui, { ...options } = {}) => {
   const queryClient = new QueryClient({
+    logger: {
+      log: console.log,
+      warn: console.warn,
+      error: process.env.NODE_ENV === "test" ? () => {} : console.error,
+    },
     defaultOptions: {
       queries: {
         retry: 0,
@@ -15,7 +21,9 @@ const customRender = (ui, { ...options } = {}) => {
   const CombinedProviders = ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>{children}</AuthProvider>
+        <SnackbarProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </SnackbarProvider>
       </QueryClientProvider>
     );
   };

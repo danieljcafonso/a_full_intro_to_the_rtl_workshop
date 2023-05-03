@@ -12,6 +12,10 @@ export const useGetCarsByUser = () => {
   return useQuery({
     queryKey: carKeys.withUsername(username),
     queryFn: fetchData,
+    select: (data) => {
+      const entries = Object.entries(data);
+      return entries.map((car) => ({ key: car[0], ...car[1] }));
+    },
   });
 };
 

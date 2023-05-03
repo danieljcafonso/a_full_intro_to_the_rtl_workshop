@@ -30,7 +30,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <SnackbarProvider>
+          <SnackbarProvider
+            anchorOrigin={{ horizontal: "right", vertical: "botton" }}
+          >
             <CssBaseline />
             <Header
               isDarkMode={isDarkMode}

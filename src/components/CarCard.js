@@ -7,7 +7,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { CardActionArea, Grid } from "@mui/material";
 
-export default function CarCard({ car }) {
+export default function CarCard({ car, deleteCar }) {
+  // TODO you can add optimistic update here
   return (
     <Card sx={{ maxWidth: 345 }} data-testid="CarCard">
       <CardActionArea>
@@ -47,8 +48,13 @@ export default function CarCard({ car }) {
               alignItems="center"
               flexDirection="column"
               xs={2}
+              data-testid="buttonContainer"
             >
-              <Button color="error" size="small">
+              <Button
+                onClick={() => deleteCar(car.key)}
+                color="error"
+                size="small"
+              >
                 Delete
               </Button>
             </Grid>

@@ -4,6 +4,10 @@ import CarCard from "../components/CarCard";
 import { styled } from "@mui/system";
 import CircularProgress from "@mui/material/CircularProgress";
 import useGetCarsByUser from "../hooks/useGetCarsByUser";
+import useDeleteCar from "../hooks/useDeleteCar";
+import { enqueueSnackbar } from "notistack";
+import { useQueryClient } from "@tanstack/react-query";
+import { carKeys } from "../utils/queryKeyFactories";
 
 export const StyledGrid = styled(Grid)(
   ({ theme }) => `
@@ -54,7 +58,18 @@ const CarList = [
 ];
 
 export const CarsList = () => {
+  const queryClient = useQueryClient();
   const { isLoading, data } = useGetCarsByUser();
+  const { mutate } = useDeleteCar({
+    onSuccess: () => {
+      enqueueSnackbar("Car was deleted!", { variant: "success" });
+      queryClient.invalidateQueries({ queryKey: carKeys.api });
+    },
+    onError: () =>
+      enqueueSnackbar("Something went wrong when deleting a car", {
+        variant: "error",
+      }),
+  });
 
   return isLoading ? (
     <Box
@@ -71,8 +86,8 @@ export const CarsList = () => {
     <Box>
       <Grid container>
         {data.map((car) => (
-          <StyledGrid item key={`${car.brand}_${car.model}`} xs={3}>
-            <CarCard car={car} />
+          <StyledGrid item key={car.key} xs={3}>
+            <CarCard car={car} deleteCar={mutate} />
           </StyledGrid>
         ))}
       </Grid>

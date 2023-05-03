@@ -1,32 +1,24 @@
 import AddCars from "../AddCars";
-import { axiosInstance } from "../../api/carsAPI";
-import { render, screen, waitFor } from "../../utils/test-utils";
 import * as useLocalStorage from "../../hooks/useLocalStorage";
+import {
+  render,
+  screen,
+  waitFor,
+  dummyCar,
+  dummyUserData,
+} from "../../utils/test-utils";
 import { useNavigate } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import { rest } from "msw";
+import { server } from "../../mocks/server";
 
 const navigateMockFn = jest.fn();
-
-const postSpy = jest.spyOn(axiosInstance, "post");
-
-const dummyCar = {
-  brand: "Audi",
-  model: "Guinea",
-  segment: "Van",
-  price: "12000",
-  fuel: "Diesel",
-  photo:
-    "https://as2.ftcdn.net/v2/jpg/00/16/14/89/1000_F_16148967_YvRk9vkq8eyVda5pDAeTRCvciG87ucqJ.jpg",
-};
-
 const useLocalStorageOriginalImplementation = useLocalStorage.default;
-const dummyUserData = { username: "daniel", email: "daniel@admin.com" };
 
 describe("AddCars tests", () => {
   beforeEach(() => {
     useLocalStorage.default = jest.fn(() => [dummyUserData, jest.fn()]);
     useNavigate.mockImplementation(() => navigateMockFn);
-    postSpy.mockResolvedValue({ data: dummyCar });
   });
   afterAll(() => {
     useLocalStorage.default = useLocalStorageOriginalImplementation;
@@ -156,11 +148,6 @@ describe("AddCars tests", () => {
 
     userEvent.click(addButton);
 
-    await waitFor(() => expect(postSpy).toHaveBeenCalled());
-    expect(postSpy).toHaveBeenCalledWith(
-      `/cars/${dummyUserData.username}`,
-      dummyCar
-    );
     const successMessage = await screen.findByText(/car was created/i);
     expect(successMessage).toBeInTheDocument();
   });
@@ -207,7 +194,7 @@ describe("AddCars tests", () => {
   });
 
   it("should show error on fail submit", async () => {
-    postSpy.mockRejectedValue(new Error("something went wrong"));
+    server.use(rest.post("*", (req, res, ctx) => res(ctx.status(403))));
 
     render(<AddCars />);
     const segment = screen.getByRole("button", {

@@ -1,34 +1,15 @@
-import { axiosInstance } from "../../api/carsAPI";
 import CarsList from "../CarsList";
-import { render, screen, within } from "../../utils/test-utils";
+import { render, screen, within, dummyUserData } from "../../utils/test-utils";
 import userEvent from "@testing-library/user-event";
 import * as useLocalStorage from "../../hooks/useLocalStorage";
-
-const getSpy = jest.spyOn(axiosInstance, "get");
-const deleteSpy = jest.spyOn(axiosInstance, "delete");
-
-const dummyCarData = {
-  data: {
-    thisisacarid: {
-      brand: "Audi",
-      model: "Guinea",
-      segment: "Van",
-      price: 12000,
-      fuel: "Diesel",
-      photo:
-        "https://as2.ftcdn.net/v2/jpg/00/16/14/89/1000_F_16148967_YvRk9vkq8eyVda5pDAeTRCvciG87ucqJ.jpg",
-    },
-  },
-};
+import { rest } from "msw";
+import { server } from "../../mocks/server";
 
 const useLocalStorageOriginalImplementation = useLocalStorage.default;
-const dummyUserData = { username: "daniel", email: "daniel@admin.com" };
 
 describe("CarsList tests", () => {
   beforeEach(() => {
     useLocalStorage.default = jest.fn(() => [dummyUserData, jest.fn()]);
-    getSpy.mockResolvedValue(dummyCarData);
-    deleteSpy.mockResolvedValue({});
   });
 
   afterAll(() => {
@@ -52,7 +33,7 @@ describe("CarsList tests", () => {
   });
 
   it("should show no cars warning when no data", async () => {
-    getSpy.mockResolvedValue({});
+    server.use(rest.get("*", (req, res, ctx) => res(ctx.status(200))));
 
     render(<CarsList />);
     const noCarsMessage = await screen.findByText("No cars to display...");
@@ -74,7 +55,7 @@ describe("CarsList tests", () => {
   });
 
   it("should fail to delete a car", async () => {
-    deleteSpy.mockRejectedValue(new Error("something went wrong"));
+    server.use(rest.delete("*", (req, res, ctx) => res(ctx.status(403))));
 
     render(<CarsList />);
 

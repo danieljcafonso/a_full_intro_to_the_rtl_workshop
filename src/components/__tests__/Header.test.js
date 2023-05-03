@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "../../utils/test-utils";
+import { render, screen, waitFor, dummyUserData } from "../../utils/test-utils";
 import Header from "../Header";
 import * as useLocalStorage from "../../hooks/useLocalStorage";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -8,7 +8,6 @@ const navigateMockFn = jest.fn();
 
 const setLocalStorage = jest.fn();
 const useLocalStorageOriginalImplementation = useLocalStorage.default;
-const dummyUserData = { username: "daniel", email: "daniel@admin.com" };
 
 describe("Header tests", () => {
   beforeEach(() => {

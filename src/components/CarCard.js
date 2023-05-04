@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import { CardActionArea, Grid } from "@mui/material";
 
 export default function CarCard({ car, deleteCar }) {
-  // TODO you can add optimistic update here
   return (
     <Card sx={{ maxWidth: 345 }} data-testid="CarCard">
       <CardActionArea>

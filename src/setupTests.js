@@ -10,7 +10,6 @@ jest.mock("react-router-dom", () => ({
   useLocation: jest.fn(),
 }));
 
-// TODO: review this
 const errorLog = console.error;
 console.error = (error) => {
   if (

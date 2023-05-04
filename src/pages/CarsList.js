@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import CarCard from "../components/CarCard";
 import { styled } from "@mui/system";
@@ -82,7 +82,7 @@ export const CarsList = () => {
     >
       <CircularProgress aria-describedby="loader" />
     </Box>
-  ) : (
+  ) : data?.length ? (
     <Box>
       <Grid container>
         {data.map((car) => (
@@ -91,6 +91,17 @@ export const CarsList = () => {
           </StyledGrid>
         ))}
       </Grid>
+    </Box>
+  ) : (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "calc(100% - 5vw) ",
+      }}
+    >
+      <Typography variant="h4"> No cars to display...</Typography>
     </Box>
   );
 };

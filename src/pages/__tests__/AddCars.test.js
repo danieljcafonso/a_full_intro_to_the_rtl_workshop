@@ -1,6 +1,5 @@
 import AddCars from "../AddCars";
 import { axiosInstance } from "../../api/carsAPI";
-import Register from "../Register";
 import { render, screen, waitFor } from "../../utils/test-utils";
 import * as useLocalStorage from "../../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
@@ -20,11 +19,19 @@ const dummyCar = {
     "https://as2.ftcdn.net/v2/jpg/00/16/14/89/1000_F_16148967_YvRk9vkq8eyVda5pDAeTRCvciG87ucqJ.jpg",
 };
 
+const useLocalStorageOriginalImplementation = useLocalStorage.default;
+const dummyUserData = { username: "daniel", email: "daniel@admin.com" };
+
 describe("AddCars tests", () => {
   beforeEach(() => {
+    useLocalStorage.default = jest.fn(() => [dummyUserData, jest.fn()]);
     useNavigate.mockImplementation(() => navigateMockFn);
     postSpy.mockResolvedValue({ data: dummyCar });
   });
+  afterAll(() => {
+    useLocalStorage.default = useLocalStorageOriginalImplementation;
+  });
+
   it("should render", () => {
     render(<AddCars />);
     const segment = screen.getByTestId(/segment/i);
@@ -150,7 +157,10 @@ describe("AddCars tests", () => {
     userEvent.click(addButton);
 
     await waitFor(() => expect(postSpy).toHaveBeenCalled());
-    expect(postSpy).toHaveBeenCalledWith("/cars/daniel", dummyCar);
+    expect(postSpy).toHaveBeenCalledWith(
+      `/cars/${dummyUserData.username}`,
+      dummyCar
+    );
     const successMessage = await screen.findByText(/car was created/i);
     expect(successMessage).toBeInTheDocument();
   });

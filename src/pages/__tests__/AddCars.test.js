@@ -6,10 +6,6 @@ import * as useLocalStorage from "../../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: jest.fn(),
-}));
 const navigateMockFn = jest.fn();
 
 const postSpy = jest.spyOn(axiosInstance, "post");
@@ -26,7 +22,6 @@ const dummyCar = {
 
 describe("AddCars tests", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     useNavigate.mockImplementation(() => navigateMockFn);
     postSpy.mockResolvedValue({ data: dummyCar });
   });

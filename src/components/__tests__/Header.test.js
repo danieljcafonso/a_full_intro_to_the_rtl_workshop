@@ -4,11 +4,6 @@ import * as useLocalStorage from "../../hooks/useLocalStorage";
 import { useNavigate, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useLocation: jest.fn(),
-  useNavigate: jest.fn(),
-}));
 const navigateMockFn = jest.fn();
 
 const setLocalStorage = jest.fn();
@@ -17,14 +12,12 @@ const dummyUserData = { username: "daniel", email: "daniel@admin.com" };
 
 describe("Header tests", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     useLocalStorage.default = jest.fn(() => [null, setLocalStorage]);
     useNavigate.mockImplementation(() => navigateMockFn);
     useLocation.mockImplementation(() => ({ pathname: "/" }));
   });
   afterAll(() => {
     useLocalStorage.default = useLocalStorageOriginalImplementation;
-    jest.resetAllMocks();
   });
 
   it("should render", () => {

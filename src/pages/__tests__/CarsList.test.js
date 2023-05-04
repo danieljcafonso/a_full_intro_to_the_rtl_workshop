@@ -2,6 +2,7 @@ import { axiosInstance } from "../../api/carsAPI";
 import CarsList from "../CarsList";
 import { render, screen, within } from "../../utils/test-utils";
 import userEvent from "@testing-library/user-event";
+import * as useLocalStorage from "../../hooks/useLocalStorage";
 
 const getSpy = jest.spyOn(axiosInstance, "get");
 const deleteSpy = jest.spyOn(axiosInstance, "delete");
@@ -20,10 +21,18 @@ const dummyCarData = {
   },
 };
 
+const useLocalStorageOriginalImplementation = useLocalStorage.default;
+const dummyUserData = { username: "daniel", email: "daniel@admin.com" };
+
 describe("CarsList tests", () => {
   beforeEach(() => {
+    useLocalStorage.default = jest.fn(() => [dummyUserData, jest.fn()]);
     getSpy.mockResolvedValue(dummyCarData);
     deleteSpy.mockResolvedValue({});
+  });
+
+  afterAll(() => {
+    useLocalStorage.default = useLocalStorageOriginalImplementation;
   });
 
   it("should show loading spinner", async () => {
@@ -40,6 +49,14 @@ describe("CarsList tests", () => {
     });
     expect(carCard).toBeInTheDocument();
     expect(carImage).toBeInTheDocument();
+  });
+
+  it("should show no cars warning when no data", async () => {
+    getSpy.mockResolvedValue({});
+
+    render(<CarsList />);
+    const noCarsMessage = await screen.findByText("No cars to display...");
+    expect(noCarsMessage).toBeInTheDocument();
   });
 
   it("should delete a car", async () => {

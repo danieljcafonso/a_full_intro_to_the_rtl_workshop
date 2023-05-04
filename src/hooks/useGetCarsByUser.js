@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { carKeys } from "../utils/queryKeyFactories";
 import { getCarsByUsername } from "../api/carsAPI";
+import useLocalStorage from "./useLocalStorage";
 
 const fetchData = async ({ queryKey }) => {
   const { username } = queryKey[0];
@@ -8,9 +9,9 @@ const fetchData = async ({ queryKey }) => {
 };
 
 export const useGetCarsByUser = () => {
-  const username = "daniel"; // TODO: get logged user
+  const [loggedUser] = useLocalStorage("loggedUser");
   return useQuery({
-    queryKey: carKeys.withUsername(username),
+    queryKey: carKeys.withUsername(loggedUser.username),
     queryFn: fetchData,
     select: (data) => {
       const entries = Object.entries(data);

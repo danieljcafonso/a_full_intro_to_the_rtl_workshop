@@ -1,4 +1,3 @@
-import { axiosInstance } from "../../api/carsAPI";
 import Login from "../Login";
 import { render, screen, waitFor, dummyUserData } from "../../utils/test-utils";
 import * as useLocalStorage from "../../hooks/useLocalStorage";
@@ -7,15 +6,12 @@ import userEvent from "@testing-library/user-event";
 
 const navigateMockFn = jest.fn();
 
-const postSpy = jest.spyOn(axiosInstance, "post");
-
 const setLocalStorage = jest.fn();
 
 describe("Login tests", () => {
   beforeEach(() => {
     useLocalStorage.default = jest.fn(() => [null, setLocalStorage]);
     useNavigate.mockImplementation(() => navigateMockFn);
-    postSpy.mockResolvedValue({ data: [dummyUserData] });
   });
 
   it("should render", () => {

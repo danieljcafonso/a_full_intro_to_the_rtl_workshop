@@ -1,23 +1,20 @@
 import AddCars from "../AddCars";
-import { axiosInstance } from "../../api/carsAPI";
 import {
   render,
   screen,
   waitFor,
   dummyCarCreateData,
-  dummyUserData,
 } from "../../utils/test-utils";
 import { useNavigate } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import { rest } from "msw";
+import { server } from "../../mocks/server";
 
 const navigateMockFn = jest.fn();
-
-const postSpy = jest.spyOn(axiosInstance, "post");
 
 describe("AddCars tests", () => {
   beforeEach(() => {
     useNavigate.mockImplementation(() => navigateMockFn);
-    postSpy.mockResolvedValue({ data: dummyCarCreateData });
   });
 
   it("should render", () => {
@@ -144,11 +141,6 @@ describe("AddCars tests", () => {
 
     userEvent.click(addButton);
 
-    await waitFor(() => expect(postSpy).toHaveBeenCalled());
-    expect(postSpy).toHaveBeenCalledWith(
-      `/cars/${dummyUserData.username}`,
-      dummyCarCreateData
-    );
     const successMessage = await screen.findByText(/car was created/i);
     expect(successMessage).toBeInTheDocument();
   });
@@ -195,8 +187,7 @@ describe("AddCars tests", () => {
   });
 
   it("should show error on fail submit", async () => {
-    postSpy.mockRejectedValue(new Error("something went wrong"));
-
+    server.use(rest.post("*", (req, res, ctx) => res(ctx.status(403))));
     render(<AddCars />);
     const segment = screen.getByRole("button", {
       name: /​/i,

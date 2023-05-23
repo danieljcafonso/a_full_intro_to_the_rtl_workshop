@@ -1,17 +1,10 @@
 import CarsList from "../CarsList";
-import { render, screen, dummyCarData, within } from "../../utils/test-utils";
-import { axiosInstance } from "../../api/carsAPI";
+import { render, screen, within, dummyUserData } from "../../utils/test-utils";
 import userEvent from "@testing-library/user-event";
-
-const getSpy = jest.spyOn(axiosInstance, "get");
-const deleteSpy = jest.spyOn(axiosInstance, "delete");
+import { rest } from "msw";
+import { server } from "../../mocks/server";
 
 describe("CarsList tests", () => {
-  beforeEach(() => {
-    getSpy.mockResolvedValue(dummyCarData);
-    deleteSpy.mockResolvedValue({});
-  });
-
   it("should show loading spinner", async () => {
     render(<CarsList />);
     const loadingSpinner = await screen.findByRole("progressbar");
@@ -29,7 +22,7 @@ describe("CarsList tests", () => {
   });
 
   it("should show no cars warning when no data", async () => {
-    getSpy.mockResolvedValue({});
+    server.use(rest.get("*", (req, res, ctx) => res(ctx.status(200))));
 
     render(<CarsList />);
     const noCarsMessage = await screen.findByText("No cars to display...");
@@ -51,7 +44,7 @@ describe("CarsList tests", () => {
   });
 
   it("should fail to delete a car", async () => {
-    deleteSpy.mockRejectedValue(new Error("something went wrong"));
+    server.use(rest.delete("*", (req, res, ctx) => res(ctx.status(403))));
 
     render(<CarsList />);
 

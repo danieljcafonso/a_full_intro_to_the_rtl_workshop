@@ -5,6 +5,7 @@
 import "@testing-library/jest-dom";
 import * as useLocalStorage from "./hooks/useLocalStorage";
 import { dummyUserData } from "./utils/test-utils";
+import { server } from "./mocks/server.js";
 
 const useLocalStorageOriginalImplementation = useLocalStorage.default;
 
@@ -13,6 +14,19 @@ jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
   useLocation: jest.fn(),
 }));
+
+beforeEach(() => {
+  useLocalStorage.default = jest.fn(() => [dummyUserData, jest.fn()]);
+});
+
+beforeAll(() => server.listen());
+
+afterEach(() => server.resetHandlers());
+
+afterAll(() => {
+  useLocalStorage.default = useLocalStorageOriginalImplementation;
+  server.close();
+});
 
 const errorLog = console.error;
 console.error = (error) => {
@@ -23,11 +37,3 @@ console.error = (error) => {
   )
     errorLog(error);
 };
-
-beforeEach(() => {
-  useLocalStorage.default = jest.fn(() => [dummyUserData, jest.fn()]);
-});
-
-afterAll(() => {
-  useLocalStorage.default = useLocalStorageOriginalImplementation;
-});

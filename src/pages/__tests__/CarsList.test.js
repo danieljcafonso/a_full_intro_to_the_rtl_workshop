@@ -3,10 +3,12 @@ import { render, screen, dummyCarData } from "../../utils/test-utils";
 import { axiosInstance } from "../../api/carsAPI";
 
 const getSpy = jest.spyOn(axiosInstance, "get");
+const deleteSpy = jest.spyOn(axiosInstance, "delete");
 
 describe("CarsList tests", () => {
   beforeEach(() => {
     getSpy.mockResolvedValue(dummyCarData);
+    deleteSpy.mockResolvedValue({});
   });
 
   it("should show loading spinner", async () => {
@@ -31,5 +33,37 @@ describe("CarsList tests", () => {
     render(<CarsList />);
     const noCarsMessage = await screen.findByText("No cars to display...");
     expect(noCarsMessage).toBeInTheDocument();
+  });
+
+  it("should delete a car", async () => {
+    render(<CarsList />);
+
+    const buttonContainer = await screen.findByTestId("buttonContainer");
+    const deleteButton = within(buttonContainer).getByRole("button", {
+      name: /delete/i,
+    });
+
+    userEvent.click(deleteButton);
+
+    const successMessage = await screen.findByText(/car was deleted/i);
+    expect(successMessage).toBeInTheDocument();
+  });
+
+  it("should fail to delete a car", async () => {
+    deleteSpy.mockRejectedValue(new Error("something went wrong"));
+
+    render(<CarsList />);
+
+    const buttonContainer = await screen.findByTestId("buttonContainer");
+    const deleteButton = within(buttonContainer).getByRole("button", {
+      name: /delete/i,
+    });
+
+    userEvent.click(deleteButton);
+
+    const errorMessage = await screen.findByText(
+      /something went wrong when deleting a car/i
+    );
+    expect(errorMessage).toBeInTheDocument();
   });
 });

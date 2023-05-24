@@ -706,3 +706,166 @@ describe("Login tests", () => {
 Repeat the same process for the Register form (`Register.js`)
 
 Thought: Tests help notice that patterns are similar, so we could probably turn those UIs into one file and change them depending on props or state.
+
+## Exercise 5 (Extra credit)
+
+The Header (`Header.js`) is a constant between all pages and is responsible for dealing with some authentication scenarios, changing routes, and changing themes.
+
+### Part 1
+
+Identify all the testing scenarios for this file.
+
+<details>
+
+<summary> See list </summary>
+
+<p>
+
+1. should render all the elements
+2. should render a logout button when authenticated
+3. should logout on logout button click
+4. should redirect to login page when not authenticated
+5. should not redirect to login page when authenticated
+6. should not redirect to login page when not authenticated but you are on login page already
+7. should not redirect to login page when not authenticated but you are on the register page
+8. should change route on nav item click
+9. should have an interactable secondary menu
+10. should show dark mode icon when in dark mode
+11. should show light mode icon when in light mode
+
+</p>
+
+</details>
+
+### Part 2
+
+Let us now implement them.
+
+<details>
+
+<summary> See solution </summary>
+
+<p>
+
+```jsx
+const navigateMockFn = jest.fn();
+
+const setLocalStorage = jest.fn();
+
+describe("Header tests", () => {
+  beforeEach(() => {
+    useLocalStorage.default = jest.fn(() => [null, setLocalStorage]);
+    useNavigate.mockImplementation(() => navigateMockFn);
+    useLocation.mockImplementation(() => ({ pathname: "/" }));
+  });
+
+  it("should render", () => {
+    render(<Header />);
+
+    const carsList = screen.getByRole("button", {
+      name: /my cars/i,
+    });
+    const addCars = screen.getByRole("button", {
+      name: /add cars/i,
+    });
+    const themeToggle = screen.getByRole("button", {
+      name: /change theme/i,
+    });
+
+    expect(carsList).toBeInTheDocument();
+    expect(addCars).toBeInTheDocument();
+    expect(themeToggle).toBeInTheDocument();
+  });
+
+  it("should render logout button when authenticated", () => {
+    useLocalStorage.default = jest.fn(() => [dummyUserData, setLocalStorage]);
+
+    render(<Header />);
+    const logoutButton = screen.getByLabelText(
+      `Logout from ${dummyUserData.username}`
+    );
+    expect(logoutButton).toBeInTheDocument();
+  });
+
+  it("should logout on logout click", async () => {
+    useLocalStorage.default = jest.fn(() => [dummyUserData, setLocalStorage]);
+
+    render(<Header />);
+    const logoutButton = screen.getByLabelText(
+      `Logout from ${dummyUserData.username}`
+    );
+
+    userEvent.click(logoutButton);
+    await waitFor(() => expect(setLocalStorage).toHaveBeenCalledWith(null));
+  });
+
+  it("should redirect to login when unauthenticated and on homepage", async () => {
+    render(<Header />);
+    await waitFor(() => expect(navigateMockFn).toHaveBeenCalledWith("/login"));
+  });
+
+  it("shouldnt redirect to login when authenticated", async () => {
+    useLocalStorage.default = jest.fn(() => [dummyUserData, setLocalStorage]);
+    render(<Header />);
+    await waitFor(() =>
+      expect(navigateMockFn).not.toHaveBeenCalledWith("/login")
+    );
+  });
+
+  it("shouldnt redirect to login when unauthenticated and on login page", async () => {
+    useLocation.mockImplementation(() => ({ pathname: "/login" }));
+    render(<Header />);
+    await waitFor(() =>
+      expect(navigateMockFn).not.toHaveBeenCalledWith("/login")
+    );
+  });
+
+  it("shouldnt redirect to login when unauthenticated and on register page", async () => {
+    useLocation.mockImplementation(() => ({ pathname: "/register" }));
+    render(<Header />);
+    await waitFor(() =>
+      expect(navigateMockFn).not.toHaveBeenCalledWith("/login")
+    );
+  });
+
+  it("should navigate to new page on nav item click", () => {
+    render(<Header />);
+
+    const carsList = screen.getByRole("button", {
+      name: /my cars/i,
+    });
+    userEvent.click(carsList);
+    expect(navigateMockFn).toHaveBeenCalledWith("/cars");
+  });
+
+  it("should show and interact with secondary menu", () => {
+    render(<Header />);
+
+    const button = screen.getByRole("button", {
+      name: /open menu/i,
+    });
+    userEvent.click(button);
+    const carsList = screen.getByRole("menuitem", {
+      name: /my cars/i,
+    });
+    userEvent.click(carsList);
+    expect(navigateMockFn).toHaveBeenCalledWith("/cars");
+  });
+
+  it("should have dark mode toggled on", () => {
+    render(<Header isDarkMode={true} />);
+    const darkModeButton = screen.getByTestId("dark_mode");
+    expect(darkModeButton).toBeInTheDocument();
+  });
+
+  it("should have light mode toggled on", () => {
+    render(<Header isDarkMode={false} />);
+    const lightModeButton = screen.getByTestId("light_mode");
+    expect(lightModeButton).toBeInTheDocument();
+  });
+});
+```
+
+</p>
+
+</details>

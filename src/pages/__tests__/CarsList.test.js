@@ -1,6 +1,7 @@
 import CarsList from "../CarsList";
-import { render, screen, dummyCarData } from "../../utils/test-utils";
+import { render, screen, dummyCarData, within } from "../../utils/test-utils";
 import { axiosInstance } from "../../api/carsAPI";
+import userEvent from "@testing-library/user-event";
 
 const getSpy = jest.spyOn(axiosInstance, "get");
 const deleteSpy = jest.spyOn(axiosInstance, "delete");

@@ -3,6 +3,10 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
+import * as useLocalStorage from "./hooks/useLocalStorage";
+import { dummyUserData } from "./utils/test-utils";
+
+const useLocalStorageOriginalImplementation = useLocalStorage.default;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -19,3 +23,11 @@ console.error = (error) => {
   )
     errorLog(error);
 };
+
+beforeEach(() => {
+  useLocalStorage.default = jest.fn(() => [dummyUserData, jest.fn()]);
+});
+
+afterAll(() => {
+  useLocalStorage.default = useLocalStorageOriginalImplementation;
+});

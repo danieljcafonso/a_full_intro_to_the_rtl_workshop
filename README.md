@@ -586,3 +586,123 @@ describe("AddCars tests", () => {
 </p>
 
 </details>
+
+## Exercise 4
+
+Let us now see our Login page (`Login.js`)
+
+### Part 1
+
+Let us start by identifying all the scenarios we can test here.
+
+<details>
+
+<summary> See list </summary>
+
+<p>
+
+1. should render the elements
+2. should log in
+3. should call navigate on logged user
+
+</p>
+
+</details>
+
+### Part 2
+
+You guessed it. Let us implement your scenarios from above.
+
+Note: to be able to simulate an authenticated user, we need to interact with our mocked useLocalStorage hook. Here is how:
+
+```jsx
+import * as useLocalStorage from "../../hooks/useLocalStorage";
+const setLocalStorage = jest.fn();
+useLocalStorage.default = jest.fn(() => ["danieljcafonso", setLocalStorage]);
+```
+
+Now you can implement your tests.
+
+<details>
+
+<summary> See solution </summary>
+
+<p>
+
+```jsx
+const navigateMockFn = jest.fn();
+
+const postSpy = jest.spyOn(axiosInstance, "post");
+
+const setLocalStorage = jest.fn();
+
+describe("Login tests", () => {
+  beforeEach(() => {
+    useLocalStorage.default = jest.fn(() => [null, setLocalStorage]);
+    useNavigate.mockImplementation(() => navigateMockFn);
+    postSpy.mockResolvedValue({ data: [dummyUserData] });
+  });
+
+  it("should render", () => {
+    render(<Login />);
+    const usernameInput = screen.getByRole("textbox", {
+      name: /username/i,
+    });
+    const emailInput = screen.getByRole("textbox", {
+      name: /email/i,
+    });
+    const loginButton = screen.getByRole("button", {
+      name: /login/i,
+    });
+    const createAccountLink = screen.getByRole("link", {
+      name: /create an account/i,
+    });
+
+    expect(usernameInput).toBeInTheDocument();
+    expect(emailInput).toBeInTheDocument();
+    expect(loginButton).toBeInTheDocument();
+    expect(createAccountLink).toBeInTheDocument();
+  });
+
+  it("should login", async () => {
+    render(<Login />);
+    const usernameInput = screen.getByRole("textbox", {
+      name: /username/i,
+    });
+    const emailInput = screen.getByRole("textbox", {
+      name: /email/i,
+    });
+    const loginButton = screen.getByRole("button", {
+      name: /login/i,
+    });
+    userEvent.type(usernameInput, dummyUserData.username);
+    userEvent.type(emailInput, dummyUserData.email);
+    userEvent.click(loginButton);
+
+    await waitFor(() =>
+      expect(setLocalStorage).toHaveBeenCalledWith(dummyUserData)
+    );
+  });
+
+  it("should call navigate on logged user", async () => {
+    useLocalStorage.default = jest.fn(() => [
+      "danieljcafonso",
+      setLocalStorage,
+    ]);
+
+    render(<Login />);
+
+    await waitFor(() => expect(navigateMockFn).toHaveBeenCalledWith("/"));
+  });
+});
+```
+
+</p>
+
+</details>
+
+### Part 3 and Part 4 (Extra credit)
+
+Repeat the same process for the Register form (`Register.js`)
+
+Thought: Tests help notice that patterns are similar, so we could probably turn those UIs into one file and change them depending on props or state.

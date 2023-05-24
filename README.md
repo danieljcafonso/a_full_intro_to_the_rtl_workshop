@@ -869,3 +869,123 @@ describe("Header tests", () => {
 </p>
 
 </details>
+
+## Exercise 6
+
+Note: we need to update our test-utils dummy objects to the following ones:
+
+```jsx
+export const dummyUserData = { username: "daniel", email: "daniel@admin.com" };
+
+export const dummyCarList = {
+  thisisacarid: {
+    brand: "Audi",
+    model: "Guinea",
+    segment: "Van",
+    price: 12000,
+    fuel: "Diesel",
+    photo:
+      "https://as2.ftcdn.net/v2/jpg/00/16/14/89/1000_F_16148967_YvRk9vkq8eyVda5pDAeTRCvciG87ucqJ.jpg",
+  },
+};
+
+export const dummyCarCreateData = {
+  brand: "Audi",
+  model: "Guinea",
+  segment: "Van",
+  price: "12000",
+  fuel: "Diesel",
+  photo:
+    "https://as2.ftcdn.net/v2/jpg/00/16/14/89/1000_F_16148967_YvRk9vkq8eyVda5pDAeTRCvciG87ucqJ.jpg",
+};
+```
+
+To add MSW to your application, run the following;
+
+```jsx
+npm install msw --save-dev
+# or
+yarn add msw --dev
+```
+
+## Create the handlers for the routes defined in the API file.
+
+<details>
+
+<summary> See solution </summary>
+
+<p>
+
+```jsx
+export const handlers = [
+  // Handles a POST /login request
+  rest.post("*/carslogin*", (req, res, ctx) => {
+    return res(ctx.json([dummyUserData]));
+  }),
+  rest.post("*/carsuser*", (req, res, ctx) => {
+    return res(ctx.json(dummyUserData));
+  }),
+  rest.post("*/cars*", (req, res, ctx) => {
+    return res(ctx.json(dummyCarCreateData));
+  }),
+  rest.get("*/cars*", (req, res, ctx) => {
+    return res(ctx.json(dummyCarList));
+  }),
+  rest.delete("*/cars*", (req, res, ctx) => {
+    return res(ctx.json({}));
+  }),
+];
+```
+
+</p>
+
+</details>
+
+### Create the server file
+
+<details>
+
+<summary> See solution </summary>
+
+<p>
+
+```jsx
+import { setupServer } from "msw/node";
+import { handlers } from "./handlers";
+
+export const server = setupServer(...handlers);
+```
+
+</p>
+
+</details>
+
+### Start listening to the server
+
+<details>
+
+<summary> See solution </summary>
+
+<p>
+
+```jsx
+beforeAll(() => server.listen());
+
+afterEach(() => server.resetHandlers());
+
+afterAll(() => server.close());
+```
+
+</p>
+
+</details>
+
+### Remove all spies
+
+Go through all tests and delete every spy you added previously. You can leverage MSW to add a custom scenario in the cases you need it by doing the following:
+
+```jsx
+import { rest } from "msw";
+import { server } from "../../mocks/server";
+server.use(rest.get("*", (req, res, ctx) => res(ctx.status(200))));
+```

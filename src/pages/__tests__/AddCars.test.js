@@ -1,7 +1,12 @@
 import AddCars from "../AddCars";
 import { axiosInstance } from "../../api/carsAPI";
-import { render, screen, waitFor } from "../../utils/test-utils";
-import * as useLocalStorage from "../../hooks/useLocalStorage";
+import {
+  render,
+  screen,
+  waitFor,
+  dummyCarCreateData,
+  dummyUserData,
+} from "../../utils/test-utils";
 import { useNavigate } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
@@ -9,27 +14,10 @@ const navigateMockFn = jest.fn();
 
 const postSpy = jest.spyOn(axiosInstance, "post");
 
-const dummyCar = {
-  brand: "Audi",
-  model: "Guinea",
-  segment: "Van",
-  price: "12000",
-  fuel: "Diesel",
-  photo:
-    "https://as2.ftcdn.net/v2/jpg/00/16/14/89/1000_F_16148967_YvRk9vkq8eyVda5pDAeTRCvciG87ucqJ.jpg",
-};
-
-const useLocalStorageOriginalImplementation = useLocalStorage.default;
-const dummyUserData = { username: "daniel", email: "daniel@admin.com" };
-
 describe("AddCars tests", () => {
   beforeEach(() => {
-    useLocalStorage.default = jest.fn(() => [dummyUserData, jest.fn()]);
     useNavigate.mockImplementation(() => navigateMockFn);
-    postSpy.mockResolvedValue({ data: dummyCar });
-  });
-  afterAll(() => {
-    useLocalStorage.default = useLocalStorageOriginalImplementation;
+    postSpy.mockResolvedValue({ data: dummyCarCreateData });
   });
 
   it("should render", () => {
@@ -100,15 +88,15 @@ describe("AddCars tests", () => {
 
     userEvent.click(segment);
     const selectOption = screen.getByRole("option", {
-      name: dummyCar.segment,
+      name: dummyCarCreateData.segment,
     });
     userEvent.click(selectOption);
-    userEvent.type(model, dummyCar.model);
-    userEvent.type(brand, dummyCar.brand);
-    userEvent.type(fuel, dummyCar.fuel);
+    userEvent.type(model, dummyCarCreateData.model);
+    userEvent.type(brand, dummyCarCreateData.brand);
+    userEvent.type(fuel, dummyCarCreateData.fuel);
     userEvent.clear(price);
     userEvent.type(price, "-1");
-    userEvent.type(photo, dummyCar.photo);
+    userEvent.type(photo, dummyCarCreateData.photo);
 
     userEvent.click(addButton);
 
@@ -144,22 +132,22 @@ describe("AddCars tests", () => {
 
     userEvent.click(segment);
     const selectOption = screen.getByRole("option", {
-      name: dummyCar.segment,
+      name: dummyCarCreateData.segment,
     });
     userEvent.click(selectOption);
-    userEvent.type(model, dummyCar.model);
-    userEvent.type(brand, dummyCar.brand);
-    userEvent.type(fuel, dummyCar.fuel);
+    userEvent.type(model, dummyCarCreateData.model);
+    userEvent.type(brand, dummyCarCreateData.brand);
+    userEvent.type(fuel, dummyCarCreateData.fuel);
     userEvent.clear(price);
-    userEvent.type(price, dummyCar.price);
-    userEvent.type(photo, dummyCar.photo);
+    userEvent.type(price, dummyCarCreateData.price);
+    userEvent.type(photo, dummyCarCreateData.photo);
 
     userEvent.click(addButton);
 
     await waitFor(() => expect(postSpy).toHaveBeenCalled());
     expect(postSpy).toHaveBeenCalledWith(
       `/cars/${dummyUserData.username}`,
-      dummyCar
+      dummyCarCreateData
     );
     const successMessage = await screen.findByText(/car was created/i);
     expect(successMessage).toBeInTheDocument();
@@ -191,15 +179,15 @@ describe("AddCars tests", () => {
 
     userEvent.click(segment);
     const selectOption = screen.getByRole("option", {
-      name: dummyCar.segment,
+      name: dummyCarCreateData.segment,
     });
     userEvent.click(selectOption);
-    userEvent.type(model, dummyCar.model);
-    userEvent.type(brand, dummyCar.brand);
-    userEvent.type(fuel, dummyCar.fuel);
+    userEvent.type(model, dummyCarCreateData.model);
+    userEvent.type(brand, dummyCarCreateData.brand);
+    userEvent.type(fuel, dummyCarCreateData.fuel);
     userEvent.clear(price);
-    userEvent.type(price, dummyCar.price);
-    userEvent.type(photo, dummyCar.photo);
+    userEvent.type(price, dummyCarCreateData.price);
+    userEvent.type(photo, dummyCarCreateData.photo);
 
     userEvent.click(addButton);
 
@@ -234,15 +222,15 @@ describe("AddCars tests", () => {
 
     userEvent.click(segment);
     const selectOption = screen.getByRole("option", {
-      name: dummyCar.segment,
+      name: dummyCarCreateData.segment,
     });
     userEvent.click(selectOption);
-    userEvent.type(model, dummyCar.model);
-    userEvent.type(brand, dummyCar.brand);
-    userEvent.type(fuel, dummyCar.fuel);
+    userEvent.type(model, dummyCarCreateData.model);
+    userEvent.type(brand, dummyCarCreateData.brand);
+    userEvent.type(fuel, dummyCarCreateData.fuel);
     userEvent.clear(price);
-    userEvent.type(price, dummyCar.price);
-    userEvent.type(photo, dummyCar.photo);
+    userEvent.type(price, dummyCarCreateData.price);
+    userEvent.type(photo, dummyCarCreateData.photo);
 
     userEvent.click(addButton);
 

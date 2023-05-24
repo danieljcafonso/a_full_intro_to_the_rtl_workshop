@@ -1,5 +1,5 @@
 import CarsList from "../CarsList";
-import { render, screen, within, dummyUserData } from "../../utils/test-utils";
+import { render, screen, within } from "../../utils/test-utils";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { server } from "../../mocks/server";

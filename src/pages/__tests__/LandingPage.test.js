@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render } from "../../utils/test-utils";
 import LandingPage from "../LandingPage";
 
 describe("LandingPage tests", () => {

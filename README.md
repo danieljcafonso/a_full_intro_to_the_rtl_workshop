@@ -1,70 +1,74 @@
-# Getting Started with Create React App
+# Testing Workshop
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Here we have an application that applies some of the patterns we might encounter in our day to day. Authentication (a simplified version of it), data fetching, data mutations, routing and more.
 
-## Available Scripts
+In this application we can do the following:
 
-In the project directory, you can run:
+1. Create cars (`AddCars.js`)
+2. View cars (`CarsList.js`)
+3. Delete cars (`CarsList.js`)
+4. Login/Register (`Login.js` and `Register.js`)
+5. Toggle Theme (`Header.js`)
 
-### `npm start`
+## Getting started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Clone this repository (or fork it), check in to the branch `feat/start_here`, and install all dependencies by running:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```
+npm i
+# or
+yarn
+```
 
-### `npm test`
+To run the app, run the development server:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+npm start
+# or
+yarn start
 
-### `npm run build`
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Open [http://localhost:3000](http://localhost:3000/) in your browser to see the page. On your first time using the app, you need to create an account using a username and an email. These are just dummy things to have the functionality in the app.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+You should now be able to use the application. Let’s get ready to start testing it.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Exercise 1
 
-### `npm run eject`
+Let us start with the most classic test to reproduce with the React Testing Library. The render one. For this scenario, we will be using our `LandingPage.js`.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Look at how that component renders in your browser. From it, do the following:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Identify all the elements that exist on the page
+2. Create a test file for that component
+3. Leveraging rendering, queries, and a jest DOM assertion validate that all the elements are rendered on the page.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+<details>
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+<summary> See solution </summary>
 
-## Learn More
+<p>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```jsx
+it("should render page", () => {
+  const { getByText, getByRole, getByAltText } = render(<LandingPage />);
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  const landingPageText = getByText(
+    "A Full Intro to the React Testing Library"
+  );
+  const landingPageButton = getByRole("button", {
+    name: "Here is a button to query",
+  });
+  const landingPageImageTL = getByAltText("octopus");
+  const landingPageImageRTL = getByAltText("goat");
 
-### Code Splitting
+  expect(landingPageText).toBeInTheDocument();
+  expect(landingPageButton).toBeInTheDocument();
+  expect(landingPageImageTL).toBeInTheDocument();
+  expect(landingPageImageRTL).toBeInTheDocument();
+});
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+</p>
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+</details>

@@ -12,7 +12,9 @@ import CarsList from "./pages/CarsList";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AddCars from "./pages/AddCars";
+import { worker } from "./mocks/worker";
 
+worker.start();
 const router = createBrowserRouter([
   {
     path: "/",

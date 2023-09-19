@@ -1,4 +1,4 @@
-import Button from "@mui/base/Button";
+import Button from "@mui/material/Button";
 import { styled } from "@mui/system";
 
 const blue = {

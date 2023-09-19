@@ -406,7 +406,7 @@ describe("AddCars tests", () => {
   it("shouldnt allow to submit a negative number", async () => {
     render(<AddCars />);
     const segment = screen.getByRole("button", {
-      name: //i,
+      name: /segment/i,
     });
     const model = screen.getByRole("textbox", {
       name: /model/i,
@@ -450,7 +450,7 @@ describe("AddCars tests", () => {
   it("should add a car", async () => {
     render(<AddCars />);
     const segment = screen.getByRole("button", {
-      name: //i,
+      name: /segment/i,
     });
     const model = screen.getByRole("textbox", {
       name: /model/i,
@@ -497,7 +497,7 @@ describe("AddCars tests", () => {
   it("should navigate to cars list after submit", async () => {
     render(<AddCars />);
     const segment = screen.getByRole("button", {
-      name: //i,
+      name: /segment/i,
     });
     const model = screen.getByRole("textbox", {
       name: /model/i,
@@ -540,7 +540,7 @@ describe("AddCars tests", () => {
 
     render(<AddCars />);
     const segment = screen.getByRole("button", {
-      name: //i,
+      name: /segment/i,
     });
     const model = screen.getByRole("textbox", {
       name: /model/i,

@@ -39,13 +39,13 @@ export const AddCars = () => {
   });
 
   const submit = (e) => {
+    e.preventDefault();
     if ([model, brand, segment, fuel, photo].includes(""))
       return enqueueSnackbar("Please fill in all data", { variant: "error" });
     if (price <= 0)
       return enqueueSnackbar("The price needs to be greater than 0", {
         variant: "error",
       });
-    e.preventDefault();
     mutate({ model, brand, segment, fuel, photo, price });
   };
 

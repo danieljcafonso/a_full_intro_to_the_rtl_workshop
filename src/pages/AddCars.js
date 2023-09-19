@@ -65,8 +65,9 @@ export const AddCars = () => {
         sx={{ marginTop: "0.75rem", width: "30%" }}
         variant="standard"
       >
-        <InputLabel htmlFor="segment">Segment</InputLabel>
+        <InputLabel id="segment">Segment</InputLabel>
         <Select
+          labelId="segment"
           id="segment"
           value={segment}
           data-testid="segment"
